@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroPayments System</title>
+    <link rel="stylesheet" href="">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://www.cminds.com/wp-content/uploads/WordPress_microPayment_rectangle_1_Illustrative_Banner_Blog.jpg'); /* Background image */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the background */
+            margin: 0
+            padding: 20px;
+            color: #2C3E50; /* Darker text color for readability */
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9); /* Slightly transparent white for the form */
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #27AE60; /* Green color for a financial feel */
+            font-family: 'Georgia', serif; /* Serif font for headings */
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: rgba(236, 240, 241, 0.9); /* Light grey background for sections */
+        }
+        button {
+            background-color: #27AE60; /* Green color for buttons */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #219653; /* Darker green on hover */
+        }
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #bdc3c7; /* Light grey border */
+            border-radius: 5px;
+        }
+        #contractBalance {
+            font-weight: bold;
+            font-size: 18px;
+            color: #27AE60; /* Green for balance display */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MicroPayments System</h1>
+
+        <div class="section">
+            <h3>Deposit Funds</h3>
+            <input type="number" id="depositAmount" placeholder="Enter Ether to deposit">
+            <button onclick="depositFunds()">Deposit</button>
+        </div>
+
+        <div class="section">
+            <h3>Send Payment</h3>
+            <input type="text" id="recipient" placeholder="Recipient Address">
+            <input type="number" id="amount" placeholder="Amount in Ether">
+            <button onclick="sendPayment()">Send</button>
+        </div>
+
+        <div class="section">
+            <h3>Withdraw Funds</h3>
+            <button onclick="withdrawFunds()">Withdraw</button>
+        </div>
+
+        <div class="section">
+            <h3>Contract Balance</h3>
+            <button onclick="getBalance()">Get Contract Balance</button>
+            <p id="contractBalance">0 ETH</p>
+        </div>
+    </div>
+
+    <script>
+        async function getBalance() {
+            const response = await fetch('/get_balance');
+            const data = await response.json();
+            document.getElementById('contractBalance').innerText = `${data.balance} ETH`;
+        }
+
+        async function depositFunds() {
+            const amount = document.getElementById('depositAmount').value;
+            const response = await fetch('/deposit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amount })
+            });
+            const data = await response.json();
+            alert(`Deposit successful! Tx Hash: ${data.tx_hash}`);
+        }
+
+        async function sendPayment() {
+            const recipient = document.getElementById('recipient').value;
+            const amount = document.getElementById('amount').value;
+            const response = await fetch('/send_payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipient: recipient, amount: amount })
+            });
+            const data = await response.json();
+            alert(`Payment sent! Tx Hash: ${data.tx_hash}`);
+        }
+
+        async function withdrawFunds() {
+            const response = await fetch('/withdraw', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            alert(`Withdrawal successful! Tx Hash: ${data.tx_hash}`);
+        }
+    </script>
+</body>
+</html>
